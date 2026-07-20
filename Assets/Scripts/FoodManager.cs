@@ -6,31 +6,28 @@ public class FoodManager : MonoBehaviour
     [SerializeField] private GameObject foodPrefab;
 
     private Tilemap groundTilemap;
-    private Snake snake;
 
-    private Vector3Int gridPosition;
+    private GameObject food;
+    public Vector3Int foodGridPosition { get; private set; }
 
     public void SetupTilemap(Tilemap groundTilemap)
     {
         this.groundTilemap = groundTilemap;
     }
 
-    public void SetupSnake(Snake snake)
-    {
-        this.snake = snake;
-    }
-
-    public void SpawnFood()
+    public GameObject SpawnFood()
     {
         BoundsInt bounds = groundTilemap.cellBounds;
 
         int randomX = Random.Range(bounds.xMin, bounds.xMax);
         int randomY = Random.Range(bounds.yMin, bounds.yMax);
 
-        gridPosition = new Vector3Int(randomX, randomY, 0);
+        foodGridPosition = new Vector3Int(randomX, randomY, 0);
+    
+        food = Instantiate(foodPrefab);
+        food.transform.position = groundTilemap.GetCellCenterWorld(foodGridPosition);
 
-        GameObject food = Instantiate(foodPrefab);
-        food.transform.position = groundTilemap.GetCellCenterWorld(gridPosition);
+        return food;
     }
 
     void Start()

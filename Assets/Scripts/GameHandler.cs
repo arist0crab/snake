@@ -7,20 +7,30 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private Snake snake;
     [SerializeField] private FoodManager foodManager;
 
+    private GameObject currntFood;
+
 
     void Start()
     {
         snake.SetupTilemap(groundTilemap);
-        snake.SetupFood(foodManager);
-
         foodManager.SetupTilemap(groundTilemap);
-        foodManager.SetupSnake(snake);
 
-        foodManager.SpawnFood();
+        currntFood = foodManager.SpawnFood();
     }
 
     void Update()
     {
-        
+        CheckSnakeEatFood();
+    }
+
+    private void CheckSnakeEatFood()
+    {
+        if (snake.snakeGridPosition == foodManager.foodGridPosition)
+        {
+            Object.Destroy(currntFood);
+            currntFood = foodManager.SpawnFood();
+
+            // TODO
+        }
     }
 }

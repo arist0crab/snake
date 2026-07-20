@@ -6,9 +6,8 @@ using UnityEngine.Tilemaps;
 public class Snake : MonoBehaviour
 {
     private Tilemap groundTilemap;
-    private FoodManager foodManager;
 
-    private Vector3Int gridPosition;
+    public Vector3Int snakeGridPosition { get; private set; }
     private Vector3Int gridMoveDirection;
 
     private float gridMoveTimer;
@@ -28,14 +27,9 @@ public class Snake : MonoBehaviour
         this.groundTilemap = groundTilemap;
     }
 
-    public void SetupFood(FoodManager foodManager)
-    {
-        this.foodManager = foodManager;
-    }
-
     private void Awake()
     {
-        gridPosition = new Vector3Int(0, 0);
+        snakeGridPosition = new Vector3Int(0, 0);
         gridMoveDirection = SnakeMoveDirection.Stay;
 
         gridMoveTimerMax = .5f;
@@ -72,10 +66,10 @@ public class Snake : MonoBehaviour
         gridMoveTimer += Time.deltaTime;
         if (gridMoveTimer >= gridMoveTimerMax)
         {
-            gridPosition += gridMoveDirection;
+            snakeGridPosition += gridMoveDirection;
             gridMoveTimer -= gridMoveTimerMax;
 
-            transform.position = groundTilemap.GetCellCenterWorld(gridPosition);
+            transform.position = groundTilemap.GetCellCenterWorld(snakeGridPosition);
             transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirection));
         }
     }
