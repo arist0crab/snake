@@ -5,7 +5,8 @@ using UnityEngine.Tilemaps;
 
 public class Snake : MonoBehaviour
 {
-    [SerializeField] private Tilemap groundTilemap;
+    private Tilemap groundTilemap;
+    private FoodManager foodManager;
 
     private Vector3Int gridPosition;
     private Vector3Int gridMoveDirection;
@@ -22,6 +23,16 @@ public class Snake : MonoBehaviour
         public static Vector3Int Down = new Vector3Int(0, -1);
     }
 
+    public void SetupTilemap(Tilemap groundTilemap)
+    {
+        this.groundTilemap = groundTilemap;
+    }
+
+    public void SetupFood(FoodManager foodManager)
+    {
+        this.foodManager = foodManager;
+    }
+
     private void Awake()
     {
         gridPosition = new Vector3Int(0, 0);
@@ -29,12 +40,6 @@ public class Snake : MonoBehaviour
 
         gridMoveTimerMax = .5f;
         gridMoveTimer = gridMoveTimerMax;
-    }
-
-
-    void Start()
-    {
-        
     }
 
     void Update()

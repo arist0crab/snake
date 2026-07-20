@@ -148,6 +148,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b557ceeb9f93d16b7a871f3090ad2294, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  groundTilemap: {fileID: 624645480}
+  snake: {fileID: 1516155847}
+  foodManager: {fileID: 0}
 --- !u!4 &196935050
 Transform:
   m_ObjectHideFlags: 0
@@ -1561,7 +1564,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e23ee9c72a8ec6b99cfb6e0cf298264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  snakeHeadSprite: {fileID: 0}
+  snakeHeadSprite: {fileID: 6943535168657398750, guid: d45ac642c02a174af97b2a0dbf2924b7, type: 3}
+  foodSprite: {fileID: -7832214784768987486, guid: d3c7e70f9414bd93d910a8f68cdd1481, type: 3}
 --- !u!4 &828038367
 Transform:
   m_ObjectHideFlags: 0
@@ -1677,7 +1681,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2d1a2795ad9086cbb4c65c02c708028, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundTilemap: {fileID: 624645480}
+--- !u!1 &1919214319
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1919214320}
+  m_Layer: 0
+  m_Name: Food
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1919214320
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919214319}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.710583, y: 0.09201647, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2025509662
 GameObject:
   m_ObjectHideFlags: 0
@@ -1732,3 +1766,4 @@ SceneRoots:
   - {fileID: 1516155846}
   - {fileID: 2025509664}
   - {fileID: 828038367}
+  - {fileID: 1919214320}
