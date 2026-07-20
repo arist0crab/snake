@@ -27,7 +27,7 @@ public class Snake : MonoBehaviour
         gridPosition = new Vector3Int(0, 0);
         gridMoveDirection = SnakeMoveDirection.Stay;
 
-        gridMoveTimerMax = 1f;
+        gridMoveTimerMax = .5f;
         gridMoveTimer = gridMoveTimerMax;
     }
 
@@ -71,6 +71,14 @@ public class Snake : MonoBehaviour
             gridMoveTimer -= gridMoveTimerMax;
 
             transform.position = groundTilemap.GetCellCenterWorld(gridPosition);
+            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirection));
         }
+    }
+
+    private float GetAngleFromVector(Vector3Int dir)
+    {
+        float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        if (n < 0) n += 360;
+        return n;
     }
 }
