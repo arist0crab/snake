@@ -61,6 +61,13 @@ public class Snake : MonoBehaviour
         shouldGrow = true;
     }
 
+    public List<Vector3Int> GetFullSnakePositionList()
+    {
+        List<Vector3Int> fullSnakePositionList = new List<Vector3Int>() { snakeGridPosition };
+        fullSnakePositionList.AddRange(snakeMovePositionList);
+        return fullSnakePositionList;
+    }
+
     private void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))

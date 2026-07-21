@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -15,28 +16,22 @@ public class FoodManager : MonoBehaviour
         this.groundTilemap = groundTilemap;
     }
 
-    public GameObject SpawnFood()
+    public GameObject SpawnFood(List<Vector3Int> fullSnakePositionList)
     {
         BoundsInt bounds = groundTilemap.cellBounds;
 
-        int randomX = Random.Range(bounds.xMin, bounds.xMax);
-        int randomY = Random.Range(bounds.yMin, bounds.yMax);
+        do
+        {
+            int randomX = Random.Range(bounds.xMin, bounds.xMax);
+            int randomY = Random.Range(bounds.yMin, bounds.yMax);
 
-        foodGridPosition = new Vector3Int(randomX, randomY, 0);
+            foodGridPosition = new Vector3Int(randomX, randomY, 0);
+        }
+        while (fullSnakePositionList.IndexOf(foodGridPosition) != -1);
     
         food = Instantiate(foodPrefab);
         food.transform.position = groundTilemap.GetCellCenterWorld(foodGridPosition);
 
         return food;
-    }
-
-    void Start()
-    {
-
-    }
-
-    void Update()
-    {
-        
     }
 }
