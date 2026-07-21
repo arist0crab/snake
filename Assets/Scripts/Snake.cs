@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
@@ -5,10 +7,16 @@ using UnityEngine.Tilemaps;
 
 public class Snake : MonoBehaviour
 {
+    [SerializeField] private GameObject snakeBodyPrefab;
+
     private Tilemap groundTilemap;
 
     public Vector3Int snakeGridPosition { get; private set; }
-    private Vector3Int gridMoveDirection;
+    private Vector3Int snakeGridMoveDirection;
+    private int snakeBodySize;
+    private bool shouldGrow;
+    private List<Vector3Int> snakeMovePositionList;
+    private List<GameObject> snakeBodyPatrsList;
 
     private float gridMoveTimer;
     private float gridMoveTimerMax;
@@ -22,43 +30,54 @@ public class Snake : MonoBehaviour
         public static Vector3Int Down = new Vector3Int(0, -1);
     }
 
-    public void SetupTilemap(Tilemap groundTilemap)
-    {
-        this.groundTilemap = groundTilemap;
-    }
-
     private void Awake()
     {
         snakeGridPosition = new Vector3Int(0, 0);
-        gridMoveDirection = SnakeMoveDirection.Stay;
+        snakeGridMoveDirection = SnakeMoveDirection.Stay;
 
         gridMoveTimerMax = .5f;
         gridMoveTimer = gridMoveTimerMax;
+
+        snakeBodySize = 0;
+        shouldGrow = false;
+        snakeMovePositionList = new List<Vector3Int>();
+        snakeBodyPatrsList = new List<GameObject>();
     }
 
     void Update()
     {
         HandleInput();
-        HandleGridMovement();        
+        HandleGridMovement(); 
+        UpdateBodyVisual();       
+    }
+
+    public void SetupTilemap(Tilemap groundTilemap)
+    {
+        this.groundTilemap = groundTilemap;
+    }
+
+    public void Grow()
+    {
+        shouldGrow = true;
     }
 
     private void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
-            if (gridMoveDirection != SnakeMoveDirection.Down)
-                gridMoveDirection = SnakeMoveDirection.Top;
+            if (snakeGridMoveDirection != SnakeMoveDirection.Down)
+                snakeGridMoveDirection = SnakeMoveDirection.Top;
 
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
-            if (gridMoveDirection != SnakeMoveDirection.Top)
-                gridMoveDirection = SnakeMoveDirection.Down;
+            if (snakeGridMoveDirection != SnakeMoveDirection.Top)
+                snakeGridMoveDirection = SnakeMoveDirection.Down;
 
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-            if (gridMoveDirection != SnakeMoveDirection.Right)
-                gridMoveDirection = SnakeMoveDirection.Left;
+            if (snakeGridMoveDirection != SnakeMoveDirection.Right)
+                snakeGridMoveDirection = SnakeMoveDirection.Left;
 
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-            if (gridMoveDirection != SnakeMoveDirection.Left)
-                gridMoveDirection = SnakeMoveDirection.Right;
+            if (snakeGridMoveDirection != SnakeMoveDirection.Left)
+                snakeGridMoveDirection = SnakeMoveDirection.Right;
     }
 
     private void HandleGridMovement()
@@ -66,11 +85,25 @@ public class Snake : MonoBehaviour
         gridMoveTimer += Time.deltaTime;
         if (gridMoveTimer >= gridMoveTimerMax)
         {
-            snakeGridPosition += gridMoveDirection;
             gridMoveTimer -= gridMoveTimerMax;
 
+            snakeMovePositionList.Insert(0, snakeGridPosition);
+
+            if (snakeMovePositionList.Count >= snakeBodySize && !shouldGrow)
+                snakeMovePositionList.RemoveAt(snakeMovePositionList.Count - 1);
+
+            if (shouldGrow)
+            {
+                GameObject newBodypart = Instantiate(snakeBodyPrefab);
+                snakeBodyPatrsList.Add(newBodypart);
+                snakeBodySize++;
+                shouldGrow = false;
+            }
+
+            snakeGridPosition += snakeGridMoveDirection;
+
             transform.position = groundTilemap.GetCellCenterWorld(snakeGridPosition);
-            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(gridMoveDirection));
+            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(snakeGridMoveDirection));
         }
     }
 
@@ -79,5 +112,15 @@ public class Snake : MonoBehaviour
         float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         if (n < 0) n += 360;
         return n;
+    }
+
+    private void UpdateBodyVisual()
+    {
+        for (int i = 0; i < snakeBodySize; i++)
+        {
+            GameObject currentBodypart = snakeBodyPatrsList[i];
+            Vector3Int currentGridPosition = snakeMovePositionList[i];
+            currentBodypart.transform.position = groundTilemap.GetCellCenterWorld(currentGridPosition);
+        }
     }
 }

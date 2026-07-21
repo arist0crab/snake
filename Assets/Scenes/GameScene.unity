@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundTilemap: {fileID: 624645480}
   snake: {fileID: 1516155847}
-  foodManager: {fileID: 0}
+  foodManager: {fileID: 1919214321}
 --- !u!4 &196935050
 Transform:
   m_ObjectHideFlags: 0
@@ -1690,8 +1690,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1919214320}
+  - component: {fileID: 1919214321}
   m_Layer: 0
-  m_Name: Food
+  m_Name: FoodManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1712,6 +1713,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1919214321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1919214319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fa3666dc56a932d788406cb7d38f115, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  foodPrefab: {fileID: 5548658196219049455, guid: 89c1e048692feb8278aa01d935ffabbf, type: 3}
 --- !u!1 &2025509662
 GameObject:
   m_ObjectHideFlags: 0

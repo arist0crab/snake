@@ -28,9 +28,8 @@ public class GameHandler : MonoBehaviour
         if (snake.snakeGridPosition == foodManager.foodGridPosition)
         {
             Object.Destroy(currntFood);
+            snake.Grow();
             currntFood = foodManager.SpawnFood();
-
-            // TODO
         }
     }
 }
