@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
@@ -11,12 +12,15 @@ public class Snake : MonoBehaviour
 
     private Tilemap groundTilemap;
 
+    public event Action<Vector3Int> OnSnakeMoved;
+
     public Vector3Int snakeGridPosition { get; private set; }
-    private Vector3Int snakeGridMoveDirection;
+    public Vector3Int snakeGridMoveDirection { get; private set; }
     private int snakeBodySize;
     private bool shouldGrow;
     private List<Vector3Int> snakeMovePositionList;
     private List<GameObject> snakeBodyPatrsList;
+    public bool isAlive { get; private set; } = true; 
 
     private float gridMoveTimer;
     private float gridMoveTimerMax;
@@ -59,6 +63,11 @@ public class Snake : MonoBehaviour
     public void Grow()
     {
         shouldGrow = true;
+    }
+
+    public void SetDead()
+    {
+        isAlive = false;
     }
 
     public List<Vector3Int> GetFullSnakePositionList()
@@ -108,9 +117,7 @@ public class Snake : MonoBehaviour
             }
 
             snakeGridPosition += snakeGridMoveDirection;
-
-            transform.position = groundTilemap.GetCellCenterWorld(snakeGridPosition);
-            transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(snakeGridMoveDirection));
+            OnSnakeMoved?.Invoke(snakeGridPosition);
         }
     }
 
@@ -123,6 +130,12 @@ public class Snake : MonoBehaviour
 
     private void UpdateBodyVisual()
     {
+        if (isAlive == false)
+            return;
+
+        transform.position = groundTilemap.GetCellCenterWorld(snakeGridPosition);
+        transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(snakeGridMoveDirection));
+
         for (int i = 0; i < snakeBodySize; i++)
         {
             GameObject currentBodypart = snakeBodyPatrsList[i];

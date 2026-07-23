@@ -16,11 +16,14 @@ public class GameHandler : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        InitializeStatic();
     }
 
     void Start()
     {
-        score = 0;
+        snake.OnSnakeMoved += CheckSnakeCollision;
+        snake.OnSnakeMoved += CheckGridBordersCollision;
+        snake.OnSnakeMoved += CheckSnakeEatFood;
 
         snake.SetupTilemap(groundTilemap);
         foodManager.SetupTilemap(groundTilemap);
@@ -30,9 +33,16 @@ public class GameHandler : MonoBehaviour
 
     void Update()
     {
-        CheckGridBordersCollision();
-        CheckSnakeCollision();
-        CheckSnakeEatFood();
+        if (!snake.isAlive)
+        {
+            Loader.Load();
+            return;
+        }
+    }
+
+    public static void InitializeStatic()
+    {
+        score = 0;
     }
 
     public static int GetScore()
@@ -40,35 +50,35 @@ public class GameHandler : MonoBehaviour
         return score;
     }
 
-    private void CheckSnakeEatFood()
+    private void CheckSnakeEatFood(Vector3Int snakeNewGridPosition)
     {
-        if (snake.snakeGridPosition == foodManager.foodGridPosition)
+        if (snakeNewGridPosition == foodManager.foodGridPosition)
         {
-            Object.Destroy(currntFood);
+            Destroy(currntFood);
             snake.Grow();
             score += 1;
             currntFood = foodManager.SpawnFood(snake.GetFullSnakePositionList());
         }
     }
 
-    private void CheckGridBordersCollision()
+    private void CheckGridBordersCollision(Vector3Int snakeNewGridPosition)
     {
         BoundsInt bounds = groundTilemap.cellBounds;
-        int snakeHeadX = snake.snakeGridPosition.x;
-        int snakeHeadY = snake.snakeGridPosition.y;
 
-        if (snakeHeadX < bounds.xMin || snakeHeadX > bounds.xMax)
-            Debug.Log("произошело столкновение в стену по X");
+        int snakeHeadX = snakeNewGridPosition.x;
+        int snakeHeadY = snakeNewGridPosition.y;
+
+        if (snakeHeadX < bounds.xMin || snakeHeadX > bounds.xMax - 1)
+            snake.SetDead();
         
-        if (snakeHeadY < bounds.yMin || snakeHeadY > bounds.yMax)
-            Debug.Log("произошло столкновение в стену по Y");
+        if (snakeHeadY < bounds.yMin || snakeHeadY > bounds.yMax - 1)
+            snake.SetDead();
     }
 
-    private void CheckSnakeCollision()
+    private void CheckSnakeCollision(Vector3Int snakeNewGridPosition)
     {
-        BoundsInt bounds = groundTilemap.cellBounds;
-        int snakeHeadX = snake.snakeGridPosition.x;
-        int snakeHeadY = snake.snakeGridPosition.y;
+        int snakeHeadX = snakeNewGridPosition.x;
+        int snakeHeadY = snakeNewGridPosition.y;
 
         List<Vector3Int> fullSnakePositionList = snake.GetFullSnakePositionList();
 
@@ -76,7 +86,10 @@ public class GameHandler : MonoBehaviour
         {
             Vector3Int bodypartVector = fullSnakePositionList[i];
             if (snakeHeadX == bodypartVector.x && snakeHeadY == bodypartVector.y)
-                Debug.Log("произошел столкновение со своим же хвостом");
+            {
+                snake.SetDead();
+                return;
+            }
         }
     }  
 }
