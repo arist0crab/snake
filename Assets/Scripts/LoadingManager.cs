@@ -13,7 +13,7 @@ public class LoadingManager : MonoBehaviour
     {
         AsyncOperation gameLoading = SceneManager.LoadSceneAsync(Loader.Scene.GameScene.ToString());
         gameLoading.allowSceneActivation = false;
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSecondsRealtime(2f);
 
         gameLoading.allowSceneActivation = true;
     }

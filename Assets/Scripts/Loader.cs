@@ -7,11 +7,16 @@ public static class Loader
     public enum Scene
     {
         GameScene,
-        Loading
+        Loading,
+        MainMenu
     }
 
-    public static void Load()
+    public static void Load(Scene scene)
     {
-        SceneManager.LoadScene(Scene.Loading.ToString());
+        if (scene == Scene.GameScene)
+            SceneManager.LoadScene(Scene.Loading.ToString());
+
+        if (scene == Scene.MainMenu)
+            SceneManager.LoadScene(Scene.MainMenu.ToString());
     }
 }

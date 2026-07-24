@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
 public class GameHandler : MonoBehaviour
@@ -38,11 +39,26 @@ public class GameHandler : MonoBehaviour
             GameOverWindow.ShowStatic();
             return;
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            GameHandler.PauseGame();
     }
 
     public static void InitializeStatic()
     {
         score = 0;
+    }
+
+    public static void PauseGame()
+    {
+        PauseWindow.ShowStatic();
+        Time.timeScale = 0f;
+    }
+
+    public static void ResumeGame()
+    {
+        PauseWindow.HideStatic();
+        Time.timeScale = 1f;
     }
 
     public static int GetScore()
