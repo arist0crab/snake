@@ -13,6 +13,7 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private FoodManager foodManager;
 
     private GameObject currntFood;
+    private static bool isGameRun = true;
 
     private void Awake()
     {
@@ -22,6 +23,8 @@ public class GameHandler : MonoBehaviour
 
     void Start()
     {
+        ApplicationInputManager.Instance.OnPausePressed += HandlePause;
+
         snake.OnSnakeMoved += CheckSnakeCollision;
         snake.OnSnakeMoved += CheckGridBordersCollision;
         snake.OnSnakeMoved += CheckSnakeEatFood;
@@ -39,9 +42,6 @@ public class GameHandler : MonoBehaviour
             GameOverWindow.ShowStatic();
             return;
         }
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-            GameHandler.PauseGame();
     }
 
     public static void InitializeStatic()
@@ -49,16 +49,24 @@ public class GameHandler : MonoBehaviour
         score = 0;
     }
 
+    private void HandlePause()
+    {
+        if (isGameRun) PauseGame();
+        else ResumeGame();
+    }
+
     public static void PauseGame()
     {
         PauseWindow.ShowStatic();
         Time.timeScale = 0f;
+        isGameRun = false;
     }
 
     public static void ResumeGame()
     {
         PauseWindow.HideStatic();
         Time.timeScale = 1f;
+        isGameRun = true;
     }
 
     public static int GetScore()

@@ -25,7 +25,7 @@ public class Snake : MonoBehaviour
     private float gridMoveTimer;
     private float gridMoveTimerMax;
 
-    private class SnakeMoveDirection
+    public class SnakeMoveDirection
     {
         public static Vector3Int Stay = new Vector3Int(0, 0);
         public static Vector3Int Left = new Vector3Int(-1, 0);
@@ -36,6 +36,8 @@ public class Snake : MonoBehaviour
 
     private void Awake()
     {
+        SnakeInputManager.Instance.OnMoveInput += HandleMovement;
+
         snakeGridPosition = new Vector3Int(0, 0);
         snakeGridMoveDirection = SnakeMoveDirection.Stay;
 
@@ -50,7 +52,6 @@ public class Snake : MonoBehaviour
 
     void Update()
     {
-        HandleInput();
         HandleGridMovement(); 
         UpdateBodyVisual();       
     }
@@ -77,23 +78,21 @@ public class Snake : MonoBehaviour
         return fullSnakePositionList;
     }
 
-    private void HandleInput()
+    private void HandleMovement(Vector3Int newSnakeGridMoveDirection)
     {
-        if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
-            if (snakeGridMoveDirection != SnakeMoveDirection.Down)
-                snakeGridMoveDirection = SnakeMoveDirection.Top;
+        if (newSnakeGridMoveDirection == SnakeMoveDirection.Down && snakeGridMoveDirection == SnakeMoveDirection.Top)
+            return;
 
-        if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
-            if (snakeGridMoveDirection != SnakeMoveDirection.Top)
-                snakeGridMoveDirection = SnakeMoveDirection.Down;
+        if (newSnakeGridMoveDirection == SnakeMoveDirection.Top && snakeGridMoveDirection == SnakeMoveDirection.Down)
+            return;
+        
+        if (newSnakeGridMoveDirection == SnakeMoveDirection.Left && snakeGridMoveDirection == SnakeMoveDirection.Right)
+            return;
 
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-            if (snakeGridMoveDirection != SnakeMoveDirection.Right)
-                snakeGridMoveDirection = SnakeMoveDirection.Left;
+        if (newSnakeGridMoveDirection == SnakeMoveDirection.Right && snakeGridMoveDirection == SnakeMoveDirection.Left)
+            return;
 
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-            if (snakeGridMoveDirection != SnakeMoveDirection.Left)
-                snakeGridMoveDirection = SnakeMoveDirection.Right;
+        snakeGridMoveDirection = newSnakeGridMoveDirection;
     }
 
     private void HandleGridMovement()
