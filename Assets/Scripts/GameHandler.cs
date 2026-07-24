@@ -35,7 +35,7 @@ public class GameHandler : MonoBehaviour
     {
         if (!snake.isAlive)
         {
-            Loader.Load();
+            GameOverWindow.ShowStatic();
             return;
         }
     }
