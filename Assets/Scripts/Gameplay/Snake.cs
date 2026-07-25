@@ -21,6 +21,7 @@ public class Snake : MonoBehaviour
     [SerializeField] private GameObject snakeBodyPrefab;
     [SerializeField] private float gridMoveTimerMax;
 
+    public event Action OnSnakeDead;
     public event Action<Vector3Int> OnSnakeMoved;
 
     public Vector3Int SnakeGridPosition { get; private set; }

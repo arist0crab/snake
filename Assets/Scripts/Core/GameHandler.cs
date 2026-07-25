@@ -36,7 +36,7 @@ public class GameHandler : MonoBehaviour
         snake.OnSnakeMoved += CheckSnakeEatFood;
     }
 
-    void Osable()
+    void OnDisable()
     {
         snake.OnSnakeMoved -= CheckSnakeCollision;
         snake.OnSnakeMoved -= CheckGridBordersCollision;
