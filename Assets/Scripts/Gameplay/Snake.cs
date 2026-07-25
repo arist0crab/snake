@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 
 public class Snake : MonoBehaviour
@@ -64,6 +65,7 @@ public class Snake : MonoBehaviour
     void Update()
     {
         if (!IsAlive) return;
+        if (!GameHandler.Instance.IsGameRun) return;
 
         HandleGridMovement();       
     }

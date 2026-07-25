@@ -227,8 +227,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b557ceeb9f93d16b7a871f3090ad2294, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  groundTilemap: {fileID: 624645480}
   snake: {fileID: 1516155847}
+  groundTilemap: {fileID: 624645480}
   foodManager: {fileID: 1919214321}
 --- !u!4 &196935050
 Transform:
@@ -243,7 +243,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 828038367}
   - {fileID: 1919214320}
   - {fileID: 1516155846}
   - {fileID: 2025509664}
@@ -1924,52 +1923,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecce319b4d9b557b097096aea6c4c1c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &828038365
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 828038367}
-  - component: {fileID: 828038366}
-  m_Layer: 0
-  m_Name: GameAssets
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &828038366
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 828038365}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e23ee9c72a8ec6b99cfb6e0cf298264, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  snakeHeadSprite: {fileID: 6943535168657398750, guid: d45ac642c02a174af97b2a0dbf2924b7, type: 3}
-  foodSprite: {fileID: -7832214784768987486, guid: d3c7e70f9414bd93d910a8f68cdd1481, type: 3}
---- !u!4 &828038367
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 828038365}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.4826894, y: -1.3797776, z: -1.0261464}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 196935050}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &869418446
 GameObject:
   m_ObjectHideFlags: 0

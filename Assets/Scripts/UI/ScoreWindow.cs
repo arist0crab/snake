@@ -12,7 +12,7 @@ public class ScoreWindow : MonoBehaviour
 
     private void Update()
     {
-        scoreText.text = GameHandler.Instance.GetScore().ToString();
+        scoreText.text = GameManager.Instance.GetScore().ToString();
     }
 
     void Start()
