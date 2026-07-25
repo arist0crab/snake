@@ -6,6 +6,18 @@ using System.Collections.Generic;
 
 public class Snake : MonoBehaviour
 {
+    private class SnakeBodyPart
+    {
+        public Vector3Int Position { get; set; }
+        public GameObject Embodiment { get; private set; } 
+
+        public SnakeBodyPart(Vector3Int position, GameObject embodiment)
+        {
+            Position = position;
+            Embodiment = embodiment;
+        }
+    }
+
     [SerializeField] private GameObject snakeBodyPrefab;
     [SerializeField] private float gridMoveTimerMax;
 
@@ -19,12 +31,9 @@ public class Snake : MonoBehaviour
 
     private Vector3Int currentMoveDirection;
     private Vector3Int nextMoveDirection;
+    private readonly List<SnakeBodyPart> snakeBodyParts = new List<SnakeBodyPart>();
 
-    private int snakeBodySize = 0;
     private bool shouldGrow = false;
-
-    private readonly List<Vector3Int> snakeMovePositionList = new List<Vector3Int>();
-    private readonly List<GameObject> snakeBodyPatrsList = new List<GameObject>();
 
     private float gridMoveTimer;
 
@@ -67,7 +76,10 @@ public class Snake : MonoBehaviour
     public List<Vector3Int> GetFullSnakePositionList()
     {
         List<Vector3Int> fullSnakePositionList = new List<Vector3Int>() { SnakeGridPosition };
-        fullSnakePositionList.AddRange(snakeMovePositionList);
+        
+        foreach (SnakeBodyPart snakeBodyPart in snakeBodyParts)
+            fullSnakePositionList.Add(snakeBodyPart.Position);
+
         return fullSnakePositionList;
     }
 
@@ -88,17 +100,19 @@ public class Snake : MonoBehaviour
         gridMoveTimer -= gridMoveTimerMax;
         currentMoveDirection = nextMoveDirection;
 
-        snakeMovePositionList.Insert(0, SnakeGridPosition);
-
-        if (snakeMovePositionList.Count >= snakeBodySize && !shouldGrow)
-            snakeMovePositionList.RemoveAt(snakeMovePositionList.Count - 1);
-
         if (shouldGrow)
         {
-            GameObject newBodypart = Instantiate(snakeBodyPrefab);
-            snakeBodyPatrsList.Add(newBodypart);
-            snakeBodySize++;
+            GameObject newGameObject = Instantiate(snakeBodyPrefab);
+            SnakeBodyPart newPart = new SnakeBodyPart(SnakeGridPosition, newGameObject);
+            snakeBodyParts.Insert(0, newPart);
             shouldGrow = false;
+        }
+        else if (snakeBodyParts.Count > 0)
+        {
+            SnakeBodyPart tailEnd = snakeBodyParts[snakeBodyParts.Count - 1];
+            snakeBodyParts.RemoveAt(snakeBodyParts.Count - 1);
+            tailEnd.Position = SnakeGridPosition;
+            snakeBodyParts.Insert(0, tailEnd);
         }
 
         SnakeGridPosition += currentMoveDirection;
@@ -107,18 +121,14 @@ public class Snake : MonoBehaviour
 
     private void UpdateBodyVisual()
     {
-        if (IsAlive == false)
+        if (groundTilemap == null) 
             return;
 
         transform.position = groundTilemap.GetCellCenterWorld(SnakeGridPosition);
         transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(currentMoveDirection));
 
-        for (int i = 0; i < snakeBodySize; i++)
-        {
-            GameObject currentBodypart = snakeBodyPatrsList[i];
-            Vector3Int currentGridPosition = snakeMovePositionList[i];
-            currentBodypart.transform.position = groundTilemap.GetCellCenterWorld(currentGridPosition);
-        }
+        foreach (var bodyPart in snakeBodyParts)
+            bodyPart.Embodiment.transform.position = groundTilemap.GetCellCenterWorld(bodyPart.Position);
     }
 
     private float GetAngleFromVector(Vector3Int dir)
