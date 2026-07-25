@@ -7,8 +7,8 @@ public class GameHandler : MonoBehaviour
     public static GameHandler Instance;
     private int score = 0;
 
-    [SerializeField] private Tilemap groundTilemap;
     [SerializeField] private Snake snake;
+    [SerializeField] private Tilemap groundTilemap;
     [SerializeField] private FoodManager foodManager;
 
     private GameObject currntFood;
@@ -79,12 +79,11 @@ public class GameHandler : MonoBehaviour
 
     private void CheckSnakeEatFood(Vector3Int snakeNewGridPosition)
     {
-        if (snakeNewGridPosition == foodManager.foodGridPosition)
+        if (foodManager.TryEat(snakeNewGridPosition))
         {
-            Destroy(currntFood);
+            score++;
             snake.Grow();
-            score += 1;
-            currntFood = foodManager.SpawnFood(snake.GetFullSnakePositionList());
+            foodManager.SpawnFood(snake.GetFullSnakePositionList());
         }
     }
 

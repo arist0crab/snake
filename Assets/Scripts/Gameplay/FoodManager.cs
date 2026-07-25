@@ -6,14 +6,20 @@ public class FoodManager : MonoBehaviour
 {
     [SerializeField] private GameObject foodPrefab;
 
-    private Tilemap groundTilemap;
+    public Vector3Int FoodGridPosition { get; private set; }
 
-    private GameObject food;
-    public Vector3Int foodGridPosition { get; private set; }
+    private Tilemap groundTilemap;
+    private GameObject currentFood;
 
     public void SetupTilemap(Tilemap groundTilemap)
     {
         this.groundTilemap = groundTilemap;
+    }
+
+    public bool TryEat(Vector3Int snakePosition)
+    {
+        Vector3 snakeWorldPosition = groundTilemap.GetCellCenterWorld(snakePosition);
+        return snakeWorldPosition == currentFood.transform.position;
     }
 
     public GameObject SpawnFood(List<Vector3Int> fullSnakePositionList)
@@ -25,13 +31,15 @@ public class FoodManager : MonoBehaviour
             int randomX = Random.Range(bounds.xMin, bounds.xMax);
             int randomY = Random.Range(bounds.yMin, bounds.yMax);
 
-            foodGridPosition = new Vector3Int(randomX, randomY, 0);
+            FoodGridPosition = new Vector3Int(randomX, randomY, 0);
         }
-        while (fullSnakePositionList.IndexOf(foodGridPosition) != -1);
-    
-        food = Instantiate(foodPrefab);
-        food.transform.position = groundTilemap.GetCellCenterWorld(foodGridPosition);
+        while (fullSnakePositionList.IndexOf(FoodGridPosition) != -1);
 
-        return food;
+        if (currentFood) Destroy(currentFood);
+    
+        currentFood = Instantiate(foodPrefab);
+        currentFood.transform.position = groundTilemap.GetCellCenterWorld(FoodGridPosition);
+
+        return currentFood;
     }
 }
