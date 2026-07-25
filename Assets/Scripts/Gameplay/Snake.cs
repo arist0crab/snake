@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 
 
 public class Snake : MonoBehaviour
@@ -50,7 +49,6 @@ public class Snake : MonoBehaviour
     private void OnEnable()
     {
         OnSnakeMoved += CheckSnakeCollision;
-        OnSnakeMoved += UpdateBodyVisual;
 
         if (SnakeInputManager.Instance != null)
             SnakeInputManager.Instance.OnMoveInput += HandleMovement;
@@ -58,6 +56,8 @@ public class Snake : MonoBehaviour
 
     private void OnDisable()
     {
+        OnSnakeMoved -= CheckSnakeCollision;
+
         if (SnakeInputManager.Instance != null)
             SnakeInputManager.Instance.OnMoveInput -= HandleMovement;
     }
@@ -126,6 +126,22 @@ public class Snake : MonoBehaviour
 
         SnakeGridPosition += currentMoveDirection;
         OnSnakeMoved?.Invoke(SnakeGridPosition);
+
+        if (!IsAlive) return;
+
+        UpdateBodyVisual();
+    }
+
+    private void UpdateBodyVisual()
+    {
+        if (groundTilemap == null) return;
+        if (IsAlive == false) return;
+
+        transform.position = groundTilemap.GetCellCenterWorld(SnakeGridPosition);
+        transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(currentMoveDirection));
+
+        foreach (var bodyPart in snakeBodyParts)
+            bodyPart.Embodiment.transform.position = groundTilemap.GetCellCenterWorld(bodyPart.Position);
     }
 
     private void CheckSnakeCollision(Vector3Int newSnakeGridPosition)
@@ -133,18 +149,6 @@ public class Snake : MonoBehaviour
         foreach (SnakeBodyPart snakeBodyPart in snakeBodyParts)
             if (newSnakeGridPosition == snakeBodyPart.Position)
                 SetDead();
-    }
-
-    private void UpdateBodyVisual(Vector3Int _)
-    {
-        if (groundTilemap == null) 
-            return;
-
-        transform.position = groundTilemap.GetCellCenterWorld(SnakeGridPosition);
-        transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(currentMoveDirection));
-
-        foreach (var bodyPart in snakeBodyParts)
-            bodyPart.Embodiment.transform.position = groundTilemap.GetCellCenterWorld(bodyPart.Position);
     }
 
     private float GetAngleFromVector(Vector3Int dir)
