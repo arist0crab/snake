@@ -20,15 +20,15 @@ public class SnakeInputManager : MonoBehaviour
     private void HandleInput()
     {
         if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
-            OnMoveInput?.Invoke(Snake.SnakeMoveDirection.Top);
+            OnMoveInput?.Invoke(Vector3Int.up);
 
         if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
-            OnMoveInput?.Invoke(Snake.SnakeMoveDirection.Down);
+            OnMoveInput?.Invoke(Vector3Int.down);
 
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-            OnMoveInput?.Invoke(Snake.SnakeMoveDirection.Left);
+            OnMoveInput?.Invoke(Vector3Int.left);
 
         if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-            OnMoveInput?.Invoke(Snake.SnakeMoveDirection.Right);
+            OnMoveInput?.Invoke(Vector3Int.right);
     }
 }

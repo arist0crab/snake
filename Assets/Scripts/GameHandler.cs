@@ -37,7 +37,7 @@ public class GameHandler : MonoBehaviour
 
     void Update()
     {
-        if (!snake.isAlive)
+        if (!snake.IsAlive)
         {
             GameOverWindow.ShowStatic();
             return;
