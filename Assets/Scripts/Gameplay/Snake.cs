@@ -48,6 +48,9 @@ public class Snake : MonoBehaviour
 
     private void OnEnable()
     {
+        OnSnakeMoved += CheckSnakeCollision;
+        OnSnakeMoved += UpdateBodyVisual;
+
         if (SnakeInputManager.Instance != null)
             SnakeInputManager.Instance.OnMoveInput += HandleMovement;
     }
@@ -62,8 +65,7 @@ public class Snake : MonoBehaviour
     {
         if (!IsAlive) return;
 
-        HandleGridMovement(); 
-        UpdateBodyVisual();       
+        HandleGridMovement();       
     }
 
     public void SetupTilemap(Tilemap groundTilemap)
@@ -72,7 +74,11 @@ public class Snake : MonoBehaviour
     }
 
     public void Grow() => shouldGrow = true;
-    public void SetDead() => IsAlive = false;
+    public void SetDead()
+    {
+        IsAlive = false;
+        OnSnakeDead?.Invoke();
+    }
 
     public List<Vector3Int> GetFullSnakePositionList()
     {
@@ -120,7 +126,14 @@ public class Snake : MonoBehaviour
         OnSnakeMoved?.Invoke(SnakeGridPosition);
     }
 
-    private void UpdateBodyVisual()
+    private void CheckSnakeCollision(Vector3Int newSnakeGridPosition)
+    {
+        foreach (SnakeBodyPart snakeBodyPart in snakeBodyParts)
+            if (newSnakeGridPosition == snakeBodyPart.Position)
+                SetDead();
+    }
+
+    private void UpdateBodyVisual(Vector3Int _)
     {
         if (groundTilemap == null) 
             return;

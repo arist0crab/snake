@@ -10,8 +10,6 @@ public class GameHandler : MonoBehaviour
     [SerializeField] private Snake snake;
     [SerializeField] private Tilemap groundTilemap;
     [SerializeField] private FoodManager foodManager;
-
-    private GameObject currntFood;
     private bool isGameRun = true;
 
     private void Awake()
@@ -25,20 +23,19 @@ public class GameHandler : MonoBehaviour
 
         snake.SetupTilemap(groundTilemap);
         foodManager.SetupTilemap(groundTilemap);
-
-        currntFood = foodManager.SpawnFood(snake.GetFullSnakePositionList());
+        foodManager.SpawnFood(snake.GetFullSnakePositionList());
     }
 
     void OnEnable()
     {
-        snake.OnSnakeMoved += CheckSnakeCollision;
         snake.OnSnakeMoved += CheckGridBordersCollision;
         snake.OnSnakeMoved += CheckSnakeEatFood;
     }
 
     void OnDisable()
     {
-        snake.OnSnakeMoved -= CheckSnakeCollision;
+        ApplicationInputManager.Instance.OnPausePressed -= HandlePause;
+
         snake.OnSnakeMoved -= CheckGridBordersCollision;
         snake.OnSnakeMoved -= CheckSnakeEatFood;
     }
@@ -100,22 +97,4 @@ public class GameHandler : MonoBehaviour
         if (snakeHeadY < bounds.yMin || snakeHeadY > bounds.yMax - 1)
             snake.SetDead();
     }
-
-    private void CheckSnakeCollision(Vector3Int snakeNewGridPosition)
-    {
-        int snakeHeadX = snakeNewGridPosition.x;
-        int snakeHeadY = snakeNewGridPosition.y;
-
-        List<Vector3Int> fullSnakePositionList = snake.GetFullSnakePositionList();
-
-        for (int i = 1; i < fullSnakePositionList.Count; i++)
-        {
-            Vector3Int bodypartVector = fullSnakePositionList[i];
-            if (snakeHeadX == bodypartVector.x && snakeHeadY == bodypartVector.y)
-            {
-                snake.SetDead();
-                return;
-            }
-        }
-    }  
 }
