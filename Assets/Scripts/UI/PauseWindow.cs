@@ -30,7 +30,7 @@ public class PauseWindow : MonoBehaviour
 
     private void OnResumeButtonClicked()
     {
-        GameHandler.ResumeGame();
+        GameHandler.Instance.ResumeGame();
     }
 
     private void OnBackToMenuButtonClicked()

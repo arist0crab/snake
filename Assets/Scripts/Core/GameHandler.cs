@@ -1,38 +1,46 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.Tilemaps;
 
 public class GameHandler : MonoBehaviour
 {
-    private static GameHandler instance;
-    private static int score;
+    public static GameHandler Instance;
+    private int score = 0;
 
     [SerializeField] private Tilemap groundTilemap;
     [SerializeField] private Snake snake;
     [SerializeField] private FoodManager foodManager;
 
     private GameObject currntFood;
-    private static bool isGameRun = true;
+    private bool isGameRun = true;
 
     private void Awake()
     {
-        instance = this;
-        InitializeStatic();
+        Instance = this;
     }
 
     void Start()
     {
         ApplicationInputManager.Instance.OnPausePressed += HandlePause;
 
-        snake.OnSnakeMoved += CheckSnakeCollision;
-        snake.OnSnakeMoved += CheckGridBordersCollision;
-        snake.OnSnakeMoved += CheckSnakeEatFood;
-
         snake.SetupTilemap(groundTilemap);
         foodManager.SetupTilemap(groundTilemap);
 
         currntFood = foodManager.SpawnFood(snake.GetFullSnakePositionList());
+    }
+
+    void OnEnable()
+    {
+        snake.OnSnakeMoved += CheckSnakeCollision;
+        snake.OnSnakeMoved += CheckGridBordersCollision;
+        snake.OnSnakeMoved += CheckSnakeEatFood;
+    }
+
+    void Osable()
+    {
+        snake.OnSnakeMoved -= CheckSnakeCollision;
+        snake.OnSnakeMoved -= CheckGridBordersCollision;
+        snake.OnSnakeMoved -= CheckSnakeEatFood;
     }
 
     void Update()
@@ -44,32 +52,27 @@ public class GameHandler : MonoBehaviour
         }
     }
 
-    public static void InitializeStatic()
-    {
-        score = 0;
-    }
-
     private void HandlePause()
     {
         if (isGameRun) PauseGame();
         else ResumeGame();
     }
 
-    public static void PauseGame()
+    public void PauseGame()
     {
         PauseWindow.ShowStatic();
         Time.timeScale = 0f;
         isGameRun = false;
     }
 
-    public static void ResumeGame()
+    public void ResumeGame()
     {
         PauseWindow.HideStatic();
         Time.timeScale = 1f;
         isGameRun = true;
     }
 
-    public static int GetScore()
+    public int GetScore()
     {
         return score;
     }
