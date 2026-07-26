@@ -9,15 +9,20 @@ public class Snake : MonoBehaviour
     private class SnakeBodyPart
     {
         public Vector3Int Position { get; set; }
+        public Vector3Int Direction { get; set; }
+        public Vector3Int PrevDirection { get; set; }
         public GameObject Embodiment { get; private set; } 
 
-        public SnakeBodyPart(Vector3Int position, GameObject embodiment)
+        public SnakeBodyPart(GameObject embodiment, Vector3Int position, Vector3Int direction, Vector3Int prevDirection = default)
         {
             Position = position;
+            Direction = direction;
+            PrevDirection = prevDirection;
             Embodiment = embodiment;
         }
     }
 
+    [SerializeField] private SnakeTextures snakeTextures;
     [SerializeField] private GameObject snakeBodyPrefab;
     [SerializeField] private float gridMoveTimerMax;
 
@@ -111,15 +116,22 @@ public class Snake : MonoBehaviour
 
         if (shouldGrow)
         {
+
             GameObject newGameObject = Instantiate(snakeBodyPrefab);
-            SnakeBodyPart newPart = new SnakeBodyPart(SnakeGridPosition, newGameObject);
+            SnakeBodyPart newPart = new(newGameObject, SnakeGridPosition, currentMoveDirection);
+            
+            if (snakeBodyParts.Count > 0)
+                newPart.PrevDirection = snakeBodyParts[0].Direction;
+                
             snakeBodyParts.Insert(0, newPart);
             shouldGrow = false;
         }
         else if (snakeBodyParts.Count > 0)
         {
-            SnakeBodyPart tailEnd = snakeBodyParts[snakeBodyParts.Count - 1];
+            Vector3Int previousDirection = snakeBodyParts[0].Direction;
+            SnakeBodyPart tailEnd = snakeBodyParts[^1];
             snakeBodyParts.RemoveAt(snakeBodyParts.Count - 1);
+            tailEnd.Direction = currentMoveDirection;
             tailEnd.Position = SnakeGridPosition;
             snakeBodyParts.Insert(0, tailEnd);
         }
@@ -141,7 +153,10 @@ public class Snake : MonoBehaviour
         transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(currentMoveDirection));
 
         foreach (var bodyPart in snakeBodyParts)
+        {
             bodyPart.Embodiment.transform.position = groundTilemap.GetCellCenterWorld(bodyPart.Position);
+            bodyPart.Embodiment.transform.eulerAngles = new(0, 0, GetAngleFromVector(bodyPart.Direction));      
+        }
     }
 
     private void CheckSnakeCollision(Vector3Int newSnakeGridPosition)

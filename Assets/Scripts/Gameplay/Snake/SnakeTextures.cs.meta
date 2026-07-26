@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9ab17a04facd86b7c8398b171e04226a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - SnakeHead: {instanceID: 0}
+  - SnakeBodyTail: {instanceID: 0}
+  - SnakeBodyCorner: {instanceID: 0}
+  - SnakeBodyStraight: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
