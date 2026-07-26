@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
+using UnityEditor;
 
 
 public class Snake : MonoBehaviour
@@ -132,6 +133,7 @@ public class Snake : MonoBehaviour
             SnakeBodyPart tailEnd = snakeBodyParts[^1];
             snakeBodyParts.RemoveAt(snakeBodyParts.Count - 1);
             tailEnd.Direction = currentMoveDirection;
+            tailEnd.PrevDirection = previousDirection;
             tailEnd.Position = SnakeGridPosition;
             snakeBodyParts.Insert(0, tailEnd);
         }
@@ -152,11 +154,54 @@ public class Snake : MonoBehaviour
         transform.position = groundTilemap.GetCellCenterWorld(SnakeGridPosition);
         transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(currentMoveDirection));
 
-        foreach (var bodyPart in snakeBodyParts)
+        for (int i = 0; i < snakeBodyParts.Count; i++)
         {
+            SnakeBodyPart bodyPart = snakeBodyParts[i];
+
             bodyPart.Embodiment.transform.position = groundTilemap.GetCellCenterWorld(bodyPart.Position);
-            bodyPart.Embodiment.transform.eulerAngles = new(0, 0, GetAngleFromVector(bodyPart.Direction));      
+            bodyPart.Embodiment.transform.eulerAngles = new(0, 0, GetAngleFromVector(bodyPart.Direction));  
+
+            SpriteRenderer spriteRenderer = bodyPart.Embodiment.GetComponent<SpriteRenderer>();
+            spriteRenderer.sprite = snakeTextures.SnakeBodyStraight;
+
+            if (bodyPart.Direction != bodyPart.PrevDirection && bodyPart.PrevDirection != Vector3Int.zero)
+            {
+                spriteRenderer.sprite = snakeTextures.SnakeBodyCorner;
+                float angleZ = CalculateCornerAngle(bodyPart.PrevDirection, bodyPart.Direction);
+                bodyPart.Embodiment.transform.eulerAngles = new(0, 0, angleZ);
+            }
         }
+    }
+
+    private float CalculateCornerAngle(Vector3Int prevDir, Vector3Int currentDir)
+    {
+        Vector3Int sum = prevDir + currentDir;
+
+        if (prevDir == Vector3Int.left && currentDir == Vector3Int.up)
+            return 180f;
+
+        if (prevDir == Vector3Int.down && currentDir == Vector3Int.right)
+            return 180f;
+
+        if (prevDir == Vector3Int.down && currentDir == Vector3Int.left)
+            return 270f;
+
+        if (prevDir == Vector3Int.right && currentDir == Vector3Int.up)
+            return 270f;
+
+        if (prevDir == Vector3Int.right && currentDir == Vector3Int.down)
+            return 0f;
+
+        if (prevDir == Vector3Int.up && currentDir == Vector3Int.left)
+            return 0f;
+
+        if (prevDir == Vector3Int.up && currentDir == Vector3Int.right)
+            return 90f;
+
+        if (prevDir == Vector3Int.left && currentDir == Vector3Int.down)
+            return 90f;
+
+        return 0f;
     }
 
     private void CheckSnakeCollision(Vector3Int newSnakeGridPosition)

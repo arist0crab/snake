@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 904587888359500548}
   - component: {fileID: -1775948631347386746}
-  - component: {fileID: 3322860723763027192}
   m_Layer: 0
   m_Name: SnakeBodypart
   m_TagString: Untagged
@@ -88,18 +87,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3322860723763027192
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9077140697234233600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f122036692e70e503ae5bcb724561dfa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BodyStraightSprite: {fileID: -1880120661550918566, guid: 6eef1edefeed7a1abaaa5e7950b84e50, type: 3}
-  BodyCornerSprite: {fileID: -6760344959024310173, guid: 1935017ea39bfd878b2f3d2c445fe43e, type: 3}
-  BodyTailSprite: {fileID: 6943535168657398750, guid: d45ac642c02a174af97b2a0dbf2924b7, type: 3}
