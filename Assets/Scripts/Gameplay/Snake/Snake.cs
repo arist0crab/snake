@@ -17,7 +17,7 @@ public class Snake : MonoBehaviour
         public Vector3Int Position { get; set; }
         public Vector3Int Direction { get; set; }
         public Vector3Int PrevDirection { get; set; }
-        public GameObject Embodiment { get; private set; } 
+        public GameObject Embodiment { get; } 
         public SnakeBodyPartType Type => DetermineType();
         private SpriteRenderer Renderer { get; }
 
@@ -32,6 +32,8 @@ public class Snake : MonoBehaviour
 
         public void UpdateVisual(Tilemap groundTilemap, SnakeTextures textures)
         {
+            if (groundTilemap == null || textures == null || Renderer == null) return;
+            
             Embodiment.transform.position = groundTilemap.GetCellCenterWorld(Position);
             Embodiment.transform.eulerAngles = GetCurrentRotationVector();
             Renderer.sprite = GetBodyPartSprite(textures);
@@ -56,27 +58,27 @@ public class Snake : MonoBehaviour
             return new(0, 0, (angle + 360f) % 360f);
         }
 
-        private Vector3Int GetCornerRotationVector()
+        private Vector3 GetCornerRotationVector()
         {
             if (PrevDirection == Vector3Int.left && Direction == Vector3Int.up)
-                return new(0, 0, 180);
+                return new(0, 0, 180f);
 
             if (PrevDirection == Vector3Int.down && Direction == Vector3Int.right)
-                return new(0, 0, 180);
+                return new(0, 0, 180f);
 
             if (PrevDirection == Vector3Int.down && Direction == Vector3Int.left)
-                return new(0, 0, 270);
+                return new(0, 0, 270f);
 
             if (PrevDirection == Vector3Int.right && Direction == Vector3Int.up)
-                return new(0, 0, 270);
+                return new(0, 0, 270f);
 
             if (PrevDirection == Vector3Int.up && Direction == Vector3Int.right)
-                return new(0, 0, 90);
+                return new(0, 0, 90f);
 
             if (PrevDirection == Vector3Int.left && Direction == Vector3Int.down)
-                return new(0, 0, 90);
+                return new(0, 0, 90f);
 
-            return new(0, 0, 0);
+            return new(0, 0, 0f);
         }
 
         private SnakeBodyPartType DetermineType()
@@ -158,7 +160,7 @@ public class Snake : MonoBehaviour
 
     public List<Vector3Int> GetFullSnakePositionList()
     {
-        List<Vector3Int> fullSnakePositionList = new() { SnakeGridPosition };
+        List<Vector3Int> fullSnakePositionList = new(snakeBodyParts.Count + 1) { SnakeGridPosition };
         
         foreach (SnakeBodyPart snakeBodyPart in snakeBodyParts)
             fullSnakePositionList.Add(snakeBodyPart.Position);
