@@ -19,6 +19,7 @@ public class Snake : MonoBehaviour
         public Vector3Int PrevDirection { get; set; }
         public GameObject Embodiment { get; private set; } 
         public SnakeBodyPartType Type => DetermineType();
+        private SpriteRenderer Renderer { get; }
 
         public SnakeBodyPart(GameObject embodiment, Vector3Int position, Vector3Int direction, Vector3Int prevDirection = default)
         {
@@ -26,14 +27,14 @@ public class Snake : MonoBehaviour
             Direction = direction;
             PrevDirection = prevDirection;
             Embodiment = embodiment;
+            Renderer = embodiment.GetComponent<SpriteRenderer>();
         }
 
         public void UpdateVisual(Tilemap groundTilemap, SnakeTextures textures)
         {
-            SpriteRenderer spriteRenderer = Embodiment.GetComponent<SpriteRenderer>();
             Embodiment.transform.position = groundTilemap.GetCellCenterWorld(Position);
             Embodiment.transform.eulerAngles = GetCurrentRotationVector();
-            spriteRenderer.sprite = GetBodyPartSprite(textures);
+            Renderer.sprite = GetBodyPartSprite(textures);
         }
 
         private Sprite GetBodyPartSprite(SnakeTextures textures)
@@ -183,29 +184,9 @@ public class Snake : MonoBehaviour
         currentMoveDirection = nextMoveDirection;
 
         if (shouldGrow)
-        {
-
-            GameObject newGameObject = Instantiate(snakeBodyPrefab);
-            SnakeBodyPart newPart = new(newGameObject, SnakeGridPosition, currentMoveDirection);
-            
-            if (snakeBodyParts.Count > 0)
-                newPart.PrevDirection = snakeBodyParts[0].Direction;
-                
-            snakeBodyParts.Insert(0, newPart);
-            shouldGrow = false;
-        }
+            GrowBody();
         else if (snakeBodyParts.Count > 0)
-        {
-            // TODO refactor
-            Vector3Int previousDirection = snakeBodyParts[0].Direction;
-            SnakeBodyPart tailEnd = snakeBodyParts[^1];
-            snakeBodyParts.RemoveAt(snakeBodyParts.Count - 1);
-            tailEnd.Direction = currentMoveDirection;
-            tailEnd.PrevDirection = previousDirection;
-            tailEnd.Position = SnakeGridPosition;
-            snakeBodyParts.Insert(0, tailEnd);
-            snakeBodyParts[^1].PrevDirection = Vector3Int.zero;
-        }
+            ShiftLastBodyPart();
 
         SnakeGridPosition += currentMoveDirection;
         OnSnakeMoved?.Invoke(SnakeGridPosition);
@@ -213,6 +194,32 @@ public class Snake : MonoBehaviour
         if (!IsAlive) return;
 
         UpdateBodyVisual();
+    }
+
+    private void GrowBody()
+    {
+        GameObject newGameObject = Instantiate(snakeBodyPrefab);
+        SnakeBodyPart newPart = new(newGameObject, SnakeGridPosition, currentMoveDirection);
+        
+        if (snakeBodyParts.Count > 0)
+            newPart.PrevDirection = snakeBodyParts[0].Direction;
+            
+        snakeBodyParts.Insert(0, newPart);
+        shouldGrow = false;
+    }
+
+    private void ShiftLastBodyPart()
+    {
+        Vector3Int previousDirection = snakeBodyParts[0].Direction;
+
+        SnakeBodyPart tailEnd = snakeBodyParts[^1];
+        tailEnd.Direction = currentMoveDirection;
+        tailEnd.PrevDirection = previousDirection;
+        tailEnd.Position = SnakeGridPosition;
+
+        snakeBodyParts.Insert(0, tailEnd);
+        snakeBodyParts.RemoveAt(snakeBodyParts.Count - 1);
+        snakeBodyParts[^1].PrevDirection = Vector3Int.zero;
     }
 
     private void UpdateBodyVisual()
