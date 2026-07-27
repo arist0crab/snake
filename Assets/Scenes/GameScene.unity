@@ -2595,6 +2595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2d1a2795ad9086cbb4c65c02c708028, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  snakeTextures: {fileID: 11400000, guid: ebbd474ceefdffe5ab076a21fd42d509, type: 2}
   snakeBodyPrefab: {fileID: 9077140697234233600, guid: 5e39103222d6be135a47d3f6f87de6ea, type: 3}
   gridMoveTimerMax: 0.5
 --- !u!1 &1558661284
