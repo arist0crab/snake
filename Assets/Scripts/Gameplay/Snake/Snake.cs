@@ -2,17 +2,23 @@ using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
-using UnityEditor;
-
 
 public class Snake : MonoBehaviour
 {
     private class SnakeBodyPart
     {
+        public enum SnakeBodyPartType
+        {
+            Normal, 
+            Corner,
+            Tail
+        }
+
         public Vector3Int Position { get; set; }
         public Vector3Int Direction { get; set; }
         public Vector3Int PrevDirection { get; set; }
         public GameObject Embodiment { get; private set; } 
+        public SnakeBodyPartType Type => DetermineType();
 
         public SnakeBodyPart(GameObject embodiment, Vector3Int position, Vector3Int direction, Vector3Int prevDirection = default)
         {
@@ -20,6 +26,67 @@ public class Snake : MonoBehaviour
             Direction = direction;
             PrevDirection = prevDirection;
             Embodiment = embodiment;
+        }
+
+        public void UpdateVisual(Tilemap groundTilemap, SnakeTextures textures)
+        {
+            SpriteRenderer spriteRenderer = Embodiment.GetComponent<SpriteRenderer>();
+            Embodiment.transform.position = groundTilemap.GetCellCenterWorld(Position);
+            Embodiment.transform.eulerAngles = GetCurrentRotationVector();
+            spriteRenderer.sprite = GetBodyPartSprite(textures);
+        }
+
+        private Sprite GetBodyPartSprite(SnakeTextures textures)
+        {
+            return Type switch
+            {
+                SnakeBodyPartType.Tail => textures.SnakeBodyTail,
+                SnakeBodyPartType.Corner => textures.SnakeBodyCorner,
+                _ => textures.SnakeBodyStraight,
+            };
+        }
+
+        private Vector3 GetCurrentRotationVector()
+        {
+            if (Type == SnakeBodyPartType.Corner)
+                return GetCornerRotationVector();
+
+            float angle = Mathf.Atan2(Direction.y, Direction.x) * Mathf.Rad2Deg;
+            return new(0, 0, (angle + 360f) % 360f);
+        }
+
+        private Vector3Int GetCornerRotationVector()
+        {
+            if (PrevDirection == Vector3Int.left && Direction == Vector3Int.up)
+                return new(0, 0, 180);
+
+            if (PrevDirection == Vector3Int.down && Direction == Vector3Int.right)
+                return new(0, 0, 180);
+
+            if (PrevDirection == Vector3Int.down && Direction == Vector3Int.left)
+                return new(0, 0, 270);
+
+            if (PrevDirection == Vector3Int.right && Direction == Vector3Int.up)
+                return new(0, 0, 270);
+
+            if (PrevDirection == Vector3Int.up && Direction == Vector3Int.right)
+                return new(0, 0, 90);
+
+            if (PrevDirection == Vector3Int.left && Direction == Vector3Int.down)
+                return new(0, 0, 90);
+
+            return new(0, 0, 0);
+        }
+
+        private SnakeBodyPartType DetermineType()
+        {
+            if (PrevDirection == Vector3Int.zero)
+                return SnakeBodyPartType.Tail;
+
+            if (PrevDirection != Direction)
+                return SnakeBodyPartType.Corner;
+
+            return SnakeBodyPartType.Normal;
         }
     }
 
@@ -90,7 +157,7 @@ public class Snake : MonoBehaviour
 
     public List<Vector3Int> GetFullSnakePositionList()
     {
-        List<Vector3Int> fullSnakePositionList = new List<Vector3Int>() { SnakeGridPosition };
+        List<Vector3Int> fullSnakePositionList = new() { SnakeGridPosition };
         
         foreach (SnakeBodyPart snakeBodyPart in snakeBodyParts)
             fullSnakePositionList.Add(snakeBodyPart.Position);
@@ -129,6 +196,7 @@ public class Snake : MonoBehaviour
         }
         else if (snakeBodyParts.Count > 0)
         {
+            // TODO refactor
             Vector3Int previousDirection = snakeBodyParts[0].Direction;
             SnakeBodyPart tailEnd = snakeBodyParts[^1];
             snakeBodyParts.RemoveAt(snakeBodyParts.Count - 1);
@@ -136,6 +204,7 @@ public class Snake : MonoBehaviour
             tailEnd.PrevDirection = previousDirection;
             tailEnd.Position = SnakeGridPosition;
             snakeBodyParts.Insert(0, tailEnd);
+            snakeBodyParts[^1].PrevDirection = Vector3Int.zero;
         }
 
         SnakeGridPosition += currentMoveDirection;
@@ -152,56 +221,10 @@ public class Snake : MonoBehaviour
         if (IsAlive == false) return;
 
         transform.position = groundTilemap.GetCellCenterWorld(SnakeGridPosition);
-        transform.eulerAngles = new Vector3(0, 0, GetAngleFromVector(currentMoveDirection));
+        transform.eulerAngles = GetNormalRotationVector(currentMoveDirection);
 
         for (int i = 0; i < snakeBodyParts.Count; i++)
-        {
-            SnakeBodyPart bodyPart = snakeBodyParts[i];
-
-            bodyPart.Embodiment.transform.position = groundTilemap.GetCellCenterWorld(bodyPart.Position);
-            bodyPart.Embodiment.transform.eulerAngles = new(0, 0, GetAngleFromVector(bodyPart.Direction));  
-
-            SpriteRenderer spriteRenderer = bodyPart.Embodiment.GetComponent<SpriteRenderer>();
-            spriteRenderer.sprite = snakeTextures.SnakeBodyStraight;
-
-            if (bodyPart.Direction != bodyPart.PrevDirection && bodyPart.PrevDirection != Vector3Int.zero)
-            {
-                spriteRenderer.sprite = snakeTextures.SnakeBodyCorner;
-                float angleZ = CalculateCornerAngle(bodyPart.PrevDirection, bodyPart.Direction);
-                bodyPart.Embodiment.transform.eulerAngles = new(0, 0, angleZ);
-            }
-        }
-    }
-
-    private float CalculateCornerAngle(Vector3Int prevDir, Vector3Int currentDir)
-    {
-        Vector3Int sum = prevDir + currentDir;
-
-        if (prevDir == Vector3Int.left && currentDir == Vector3Int.up)
-            return 180f;
-
-        if (prevDir == Vector3Int.down && currentDir == Vector3Int.right)
-            return 180f;
-
-        if (prevDir == Vector3Int.down && currentDir == Vector3Int.left)
-            return 270f;
-
-        if (prevDir == Vector3Int.right && currentDir == Vector3Int.up)
-            return 270f;
-
-        if (prevDir == Vector3Int.right && currentDir == Vector3Int.down)
-            return 0f;
-
-        if (prevDir == Vector3Int.up && currentDir == Vector3Int.left)
-            return 0f;
-
-        if (prevDir == Vector3Int.up && currentDir == Vector3Int.right)
-            return 90f;
-
-        if (prevDir == Vector3Int.left && currentDir == Vector3Int.down)
-            return 90f;
-
-        return 0f;
+            snakeBodyParts[i].UpdateVisual(groundTilemap, snakeTextures);
     }
 
     private void CheckSnakeCollision(Vector3Int newSnakeGridPosition)
@@ -211,10 +234,9 @@ public class Snake : MonoBehaviour
                 SetDead();
     }
 
-    private float GetAngleFromVector(Vector3Int dir)
+    private Vector3 GetNormalRotationVector(Vector3Int direction)
     {
-        float n = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        if (n < 0) n += 360;
-        return n;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        return new Vector3(0, 0, (angle + 360f) % 360f);
     }
 }
