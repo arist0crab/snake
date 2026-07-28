@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: SnakeTextures
   m_EditorClassIdentifier: 
   SnakeHead: {fileID: 6943535168657398750, guid: d45ac642c02a174af97b2a0dbf2924b7, type: 3}
-  SnakeBodyTail: {fileID: -6254662425824378823, guid: 9f2aee0c4571bad82b56cdd5f88c4792, type: 3}
+  SnakeBodyTail: {fileID: 2390396485076051667, guid: 9edd2d9a0f07211d3bd280c38eb5f97b, type: 3}
   SnakeBodyCorner: {fileID: -6760344959024310173, guid: 1935017ea39bfd878b2f3d2c445fe43e, type: 3}
   SnakeBodyStraight: {fileID: -1880120661550918566, guid: 6eef1edefeed7a1abaaa5e7950b84e50, type: 3}
