@@ -5,8 +5,9 @@ public class MainMenuWindow : MonoBehaviour
 {
     private void Awake()
     {
-        Button playButton = transform.Find("playButton").GetComponent<Button>();
-        Button quitButton = transform.Find("quitButton").GetComponent<Button>();
+        Transform bgTransform = transform.Find("BackgroundImage");
+        Button playButton = bgTransform.Find("playButton").GetComponent<Button>();
+        Button quitButton = bgTransform.Find("quitButton").GetComponent<Button>();
 
         playButton.onClick.AddListener(OnPlayButtonClicked);
         quitButton.onClick.AddListener(OnQuitButtonClicked);
